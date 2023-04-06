@@ -7,5 +7,6 @@ services:
     environment:
       EULA: "TRUE"
       SETUP_ONLY: "TRUE"
+      EXPECT_RCON_PASSWORD: ${EXPECT_RCON_PASSWORD}
     volumes:
       - ./data:/data

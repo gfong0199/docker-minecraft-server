@@ -46,10 +46,7 @@ setupOnlyMinecraftTest(){
     outputContainerLog "$logs"
     result=1
   elif [ -f verify.sh ]; then
-    # if there is an environment.sh, run it, and push the output to ./.tests.env. then load that as an env-file for the docker run
-    env_file=$([ -f environment.sh ] && sh ./environment.sh > ./.tests.env && echo "--env-file=./.tests.env" || echo "")
-    [ ! -z "${env_file// }" ] && echo "Using env-file argument: $env_file"
-    if ! docker run --rm --entrypoint bash $env_file -v "${PWD}/data":/data -v "${PWD}/verify.sh":/verify "${IMAGE_TO_TEST:-itzg/minecraft-server}" -e /verify; then
+    if ! docker compose run --rm --entrypoint bash -v "${PWD}/verify.sh":/verify mc -e /verify; then
       endTime=$(date +%s)
       echo "${folder} FAILED verify in $(delta start)"
       outputContainerLog "$logs"
@@ -58,8 +55,6 @@ setupOnlyMinecraftTest(){
       endTime=$(date +%s)
       echo "${folder} PASSED verify in $(delta start)"
     fi
-    # clean up the env file it if exists
-    [ -f ./.tests.env ] && rm -rf ./.tests.env
   else
     echo "${folder} PASSED in $(delta start)"
   fi
